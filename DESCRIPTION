@@ -1,0 +1,29 @@
+Package: kenyaIndicators
+Title: Kenya DHS Indicators Dashboard
+Version: 0.0.0.01
+Authors@R: person("Moses", "Mburu", email = "mmburu20@gmail.com", role = c("cre", "aut"))
+Author: Moses Mburu [cre, aut]
+Maintainer: Moses Mburu <mmburu20@gmail.com>
+Description: A hypothesis-driven Shiny dashboard for Kenya national DHS indicators from HDX and The DHS Program.
+License: Apache License (>= 2)
+Depends:
+    R (>= 4.1)
+Imports:
+    data.table (>= 1.14.2),
+    DT,
+    ggiraph,
+    ggplot2,
+    golem (>= 0.4.1),
+    sf,
+    shiny (>= 1.8.1.1),
+    shinycssloaders
+Suggests:
+    checkhelper,
+    rhdx,
+    testthat (>= 3.0.0),
+    usethis
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0

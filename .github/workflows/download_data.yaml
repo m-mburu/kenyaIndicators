@@ -1,0 +1,92 @@
+name: Check, refresh data, and deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      refresh_data:
+        description: Download and preprocess the latest HDX data
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    - cron: "0 0 1 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kenya-indicators-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-refresh-deploy:
+    runs-on: ubuntu-24.04
+    env:
+      TZ: Africa/Nairobi
+      GITHUB_PAT: ${{ secrets.GH_PAT }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - name: Install and cache R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 1
+          needs: check
+          extra-packages: |
+            any::devtools
+            any::desc
+            any::remotes
+            any::rsconnect
+            github::dickoa/rhdx
+
+      - name: Refresh and preprocess HDX data
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
+        run: Rscript data-raw/my_dataset.R
+
+      - name: Run package tests
+        run: Rscript -e "devtools::test(stop_on_failure = TRUE)"
+
+      - name: Check package
+        run: Rscript -e "devtools::check(document = FALSE, manual = FALSE, vignettes = FALSE, error_on = 'error')"
+
+      - name: Commit refreshed package data
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
+        shell: bash
+        run: |
+          if [[ -z "$(git status --porcelain -- data data-raw/dhs_hdx R/doc_*.R)" ]]; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data data-raw/dhs_hdx R/doc_*.R
+          git commit -m "chore(data): refresh Kenya DHS indicators [skip actions]"
+          git push origin HEAD:main
+
+      - name: Install Kenya Indicators package
+        if: github.event_name != 'pull_request'
+        run: |
+          Rscript -e "remotes::install_github('m-mburu/kenyaIndicators', upgrade = 'never')"
+
+      - name: Deploy to shinyapps.io
+        if: github.event_name != 'pull_request'
+        env:
+          RS_CONNECT_TOKEN: ${{ secrets.RS_CONNECT_TOKEN }}
+          RS_CONNECT_SECRET: ${{ secrets.RS_CONNECT_SECRET }}
+        run: Rscript dev/deploy.R

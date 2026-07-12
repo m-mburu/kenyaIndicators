@@ -1,0 +1,16 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+^dev$
+^dashboard_plan\.md$
+
+^\.gitignore$
+^\.\.Rcheck$
+^app[.]R$
+
+^home-final-small[.]jpg$
+^home-final[.]png$
+^home-master-detail-small[.]jpg$
+^home-master-detail-small[.]png$
+^home-master-detail[.]png$
+^vds_design[.]txt$

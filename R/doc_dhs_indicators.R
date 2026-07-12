@@ -1,0 +1,53 @@
+#' dhs_indicators
+#'
+#' Description.
+#'
+#' @format A data frame with 8851 rows and 44 variables:
+#' \describe{
+#'   \item{ resource_name }{  character }
+#'   \item{ iso3 }{  character }
+#'   \item{ data_id }{  character }
+#'   \item{ indicator }{  character }
+#'   \item{ value }{  numeric }
+#'   \item{ precision }{  numeric }
+#'   \item{ dhs_country_code }{  character }
+#'   \item{ country_name }{  character }
+#'   \item{ survey_year }{  numeric }
+#'   \item{ survey_id }{  character }
+#'   \item{ indicator_id }{  character }
+#'   \item{ indicator_order }{  numeric }
+#'   \item{ indicator_type }{  character }
+#'   \item{ characteristic_id }{  character }
+#'   \item{ characteristic_order }{  numeric }
+#'   \item{ characteristic_category }{  character }
+#'   \item{ characteristic_label }{  character }
+#'   \item{ by_variable_id }{  character }
+#'   \item{ by_variable_label }{  character }
+#'   \item{ is_total }{  logical }
+#'   \item{ is_preferred }{  logical }
+#'   \item{ sdr_id }{  character }
+#'   \item{ region_id }{  character }
+#'   \item{ survey_year_label }{  character }
+#'   \item{ survey_type }{  character }
+#'   \item{ denominator_weighted }{  numeric }
+#'   \item{ denominator_unweighted }{  numeric }
+#'   \item{ ci_low }{  numeric }
+#'   \item{ ci_high }{  numeric }
+#'   \item{ level_rank }{  numeric }
+#'   \item{ resource_position }{  character }
+#'   \item{ resource_id }{  character }
+#'   \item{ resource_file }{  character }
+#'   \item{ domain_group }{  character }
+#'   \item{ analysis_theme }{  character }
+#'   \item{ sex_group }{  character }
+#'   \item{ series_family }{  character }
+#'   \item{ county_available }{  logical }
+#'   \item{ preferred_total_flag }{  logical }
+#'   \item{ value_label }{  character }
+#'   \item{ value_unit }{  character }
+#'   \item{ value_axis_label }{  character }
+#'   \item{ indicator_label }{  character }
+#'   \item{ plot_group }{  character }
+#' }
+#' @source Source
+"dhs_indicators"

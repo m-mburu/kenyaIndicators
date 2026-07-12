@@ -1,0 +1,13 @@
+ISO3,DataId,Indicator,Value,Precision,DHS_CountryCode,CountryName,SurveyYear,SurveyId,IndicatorId,IndicatorOrder,IndicatorType,CharacteristicId,CharacteristicOrder,CharacteristicCategory,CharacteristicLabel,ByVariableId,ByVariableLabel,IsTotal,IsPreferred,SDRID,RegionId,SurveyYearLabel,SurveyType,DenominatorWeighted,DenominatorUnweighted,CILow,CIHigh,LevelRank
+KEN,812338,Malaria prevalence according to RDT,9.1,1,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_RDT,125136010,I,1000,0,Total,Total,0,,1,1,MLPMALCRDT,,2015,MIS,3072,3418,6.2,11.9,
+KEN,171800,Number of children 6-59 months tested using RDT,3072,0,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_NMR,125136060,D,1000,0,Total,Total,0,,1,1,MLPMALCNMR,,2015,MIS,,3418,,,
+KEN,362294,Number of children 6-59 months tested using RDT (unweighted),3418,0,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_UNR,125136070,U,1000,0,Total,Total,0,,1,1,MLPMALCUNR,,2015,MIS,3072,,,,
+KEN,774958,Malaria prevalence according to microscopy,5,1,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_MSY,125136110,I,1000,0,Total,Total,0,,1,1,MLPMALCMSY,,2015,MIS,3080,3427,3.4,6.6,
+KEN,171818,Number of children 6-59 months tested using microscopy,3080,0,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_NMM,125136160,D,1000,0,Total,Total,0,,1,1,MLPMALCNMM,,2015,MIS,,3427,,,
+KEN,171999,Number of children 6-59 months tested using microscopy (unweighted),3427,0,KE,Kenya,2015,KE2015MIS,ML_PMAL_C_UNM,125136170,U,1000,0,Total,Total,0,,1,1,MLPMALCUNM,,2015,MIS,3080,,,,
+KEN,741942,Malaria prevalence according to RDT,4.4,1,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_RDT,125136010,I,1000,0,Total,Total,0,,1,1,MLPMALCRDT,,2020,MIS,3401,3736,3,5.9,
+KEN,744711,Number of children 6-59 months tested using RDT,3401,0,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_NMR,125136060,D,1000,0,Total,Total,0,,1,1,MLPMALCNMR,,2020,MIS,,3736,,,
+KEN,337689,Number of children 6-59 months tested using RDT (unweighted),3736,0,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_UNR,125136070,U,1000,0,Total,Total,0,,1,1,MLPMALCUNR,,2020,MIS,3401,,,,
+KEN,772971,Malaria prevalence according to microscopy,3,1,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_MSY,125136110,I,1000,0,Total,Total,0,,1,1,MLPMALCMSY,,2020,MIS,3395,3725,1.9,4,
+KEN,397762,Number of children 6-59 months tested using microscopy,3395,0,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_NMM,125136160,D,1000,0,Total,Total,0,,1,1,MLPMALCNMM,,2020,MIS,,3725,,,
+KEN,208751,Number of children 6-59 months tested using microscopy (unweighted),3725,0,KE,Kenya,2020,KE2020MIS,ML_PMAL_C_UNM,125136170,U,1000,0,Total,Total,0,,1,1,MLPMALCUNM,,2020,MIS,3395,,,,

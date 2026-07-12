@@ -1,0 +1,13 @@
+ISO3,DataId,Indicator,Value,Precision,DHS_CountryCode,CountryName,SurveyYear,SurveyId,IndicatorId,IndicatorOrder,IndicatorType,CharacteristicId,CharacteristicOrder,CharacteristicCategory,CharacteristicLabel,ByVariableId,ByVariableLabel,IsTotal,IsPreferred,SDRID,RegionId,SurveyYearLabel,SurveyType,DenominatorWeighted,DenominatorUnweighted,CILow,CIHigh,LevelRank
+KEN,504967,Using social marketing brand of pill,83.2,1,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_PIL,32763010,I,1000,0,Total,Total,0,,1,1,FPSOCMWPIL,,2008-09,DHS,281,300,,,
+KEN,503107,Number of women using pills,281,0,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_NPL,32763020,D,1000,0,Total,Total,0,,1,1,FPSOCMWNPL,,2008-09,DHS,,300,,,
+KEN,352389,Number of women using pills (unweighted),300,0,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_UPL,32763030,U,1000,0,Total,Total,0,,1,1,FPSOCMWUPL,,2008-09,DHS,281,,,,
+KEN,209510,Using social marketing brand of condom,84.7,1,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_CON,32763040,I,1000,0,Total,Total,0,,1,1,FPSOCMWCON,,2008-09,DHS,130,162,,,
+KEN,74134,Number of women using condoms,130,0,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_NCN,32763050,D,1000,0,Total,Total,0,,1,1,FPSOCMWNCN,,2008-09,DHS,,162,,,
+KEN,209509,Number of women using condoms (unweighted),162,0,KE,Kenya,2008,KE2008DHS,FP_SOCM_W_UCN,32763060,U,1000,0,Total,Total,0,,1,1,FPSOCMWUCN,,2008-09,DHS,130,,,,
+KEN,337278,Using social marketing brand of pill,98,1,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_PIL,32763010,I,1000,0,Total,Total,0,,1,1,FPSOCMWPIL,,2022,DHS,847,663,,,
+KEN,153522,Number of women using pills,847,0,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_NPL,32763020,D,1000,0,Total,Total,0,,1,1,FPSOCMWNPL,,2022,DHS,,663,,,
+KEN,337279,Number of women using pills (unweighted),663,0,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_UPL,32763030,U,1000,0,Total,Total,0,,1,1,FPSOCMWUPL,,2022,DHS,847,,,,
+KEN,757590,Using social marketing brand of condom,99.5,1,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_CON,32763040,I,1000,0,Total,Total,0,,1,1,FPSOCMWCON,,2022,DHS,644,540,,,
+KEN,758973,Number of women using condoms,644,0,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_NCN,32763050,D,1000,0,Total,Total,0,,1,1,FPSOCMWNCN,,2022,DHS,,540,,,
+KEN,278220,Number of women using condoms (unweighted),540,0,KE,Kenya,2022,KE2022DHS,FP_SOCM_W_UCN,32763060,U,1000,0,Total,Total,0,,1,1,FPSOCMWUCN,,2022,DHS,644,,,,
