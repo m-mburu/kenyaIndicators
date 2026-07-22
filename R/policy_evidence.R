@@ -61,6 +61,26 @@ policy_story_rows <- function(timeline, catalogue, selected_sdg, mapping = polic
   merge(out, catalogue[, .(indicator_id, has_ci, has_denominator)], by = "indicator_id", all.x = TRUE)
 }
 
+policy_latest_rows <- function(timeline) {
+  out <- data.table::copy(timeline)[!is.na(survey_year)]
+  data.table::setorder(out, indicator_id, survey_year)
+  out[, .SD[.N], by = indicator_id]
+}
+
+filter_policy_status <- function(timeline, status_filter = "all") {
+  if (identical(status_filter, "all")) return(data.table::copy(timeline))
+
+  latest <- policy_latest_rows(timeline)
+  keep_status <- switch(
+    status_filter,
+    improving = "Improved",
+    attention = c("Little change", "Worse", "No estimate"),
+    character()
+  )
+  keep_ids <- latest[progress_status %in% keep_status, indicator_id]
+  data.table::copy(timeline)[indicator_id %in% keep_ids]
+}
+
 policy_evidence_gaps <- function() {
   data.table::data.table(
     SDG = c("SDG 1", "SDG 7", "SDG 8", "SDG 9", "SDG 10", "SDG 11", "SDG 12", "SDG 13", "SDG 14", "SDG 15", "SDG 16", "SDG 17"),

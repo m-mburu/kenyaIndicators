@@ -1,5 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.github$
 ^data-raw$
 ^dev$
 ^dashboard_plan\.md$

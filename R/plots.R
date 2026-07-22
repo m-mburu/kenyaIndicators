@@ -20,6 +20,39 @@ empty_girafe <- function(message) {
   standard_girafe(p, width_svg = 8, height_svg = 4.8)
 }
 
+overview_indicator_title <- function(indicator_id, fallback) {
+  short_titles <- c(
+    FE_FRTR_W_TFR = "Total fertility rate",
+    FP_CUSM_W_MOD = "Modern contraceptive use",
+    FP_NADM_W_UNT = "Unmet need for family planning",
+    CM_ECMR_C_U5M = "Under-five mortality",
+    CM_ECMR_C_IMR = "Infant mortality",
+    CH_VACC_C_BAS = "Basic vaccination coverage",
+    RH_DELP_C_DHF = "Delivery in a health facility",
+    CN_NUTS_C_HA2 = "Children stunted",
+    ML_NETC_C_ITN = "Under-5s sleeping under an ITN",
+    HA_CPHT_W_T1R = "Women receiving an HIV test result",
+    ED_EDUC_W_SEH = "Women with secondary+ education",
+    WS_SRCE_P_IMP = "Improved water source",
+    WS_TLET_P_IMP = "Improved sanitation facility",
+    HC_ELEC_H_ELC = "Households with electricity",
+    DV_SPVL_W_POS = "Spousal violence against women",
+    FG_PFCC_W_WCC = "Women circumcised (FGC)"
+  )
+  title <- unname(short_titles[as.character(indicator_id)])
+  title[is.na(title)] <- fallback[is.na(title)]
+  title
+}
+
+overview_status_cue <- function(status) {
+  data.table::fcase(
+    status == "Improved", "\u2197 Improving",
+    status == "Little change", "\u2192 Mixed",
+    status == "Worse", "\u2198 Worsening",
+    default = "? No estimate"
+  )
+}
+
 plot_unit <- function(dt) {
   if ("value_unit" %in% names(dt)) {
     unit <- first_available(dt$value_unit)
@@ -129,17 +162,30 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
     return(empty_girafe("No trend values available"))
   }
 
-  plot_dt[, signal_label := wrap_short(indicator_label, width = 25, max_chars = 62)]
-  plot_dt[, signal_label := factor(signal_label, levels = unique(signal_label))]
   plot_dt[, latest_status := progress_status[.N], by = indicator_id]
   plot_dt[, latest_status := factor(latest_status, levels = c("Improved", "Little change", "Worse", "No estimate"))]
-  plot_dt[, tooltip := paste0(
-    indicator,
-    "\nSurvey year: ", survey_year,
-    "\nValue: ", format_value_with_unit(value, precision, value_unit),
-    "\nLatest status: ", latest_status,
-    "\nDirection rule: ", desired_direction_label
+  plot_dt[, display_title := overview_indicator_title(indicator_id, indicator_label)]
+  plot_dt[, status_cue := overview_status_cue(as.character(latest_status))]
+  plot_dt[, direction_cue := ifelse(desirable_direction >= 0, "\u2191 higher is better", "\u2193 lower is better")]
+  plot_dt[, signal_label := paste0(
+    wrap_short(display_title, width = 25, max_chars = 48),
+    "\n", status_cue, "  \u00b7  ", direction_cue
   )]
+  plot_dt[, signal_label := factor(signal_label, levels = unique(signal_label))]
+  plot_dt[, latest_tooltip := {
+    latest <- .SD[.N]
+    paste0(
+      latest$indicator,
+      "\nLatest: ", format_value_with_unit(latest$value, latest$precision, latest$value_unit),
+      " (", latest$survey_year, ")",
+      "\nStatus: ", overview_status_cue(as.character(latest$latest_status)),
+      "\nDirection rule: ", latest$desired_direction_label,
+      "\nSelect for the full evidence view"
+    )
+  }, by = indicator_id]
+
+  card_dt <- plot_dt[, .SD[.N], by = indicator_id]
+  ncol <- balanced_panel_columns(ncol, data.table::uniqueN(plot_dt$indicator_id))
 
   year_breaks <- pretty(range(plot_dt$survey_year, na.rm = TRUE), n = 4)
   year_breaks <- year_breaks[year_breaks >= min(plot_dt$survey_year, na.rm = TRUE) & year_breaks <= max(plot_dt$survey_year, na.rm = TRUE)]
@@ -148,13 +194,24 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
   }
 
   p <- ggplot2::ggplot(plot_dt, ggplot2::aes(x = survey_year, y = value, group = indicator_id, color = latest_status)) +
+    ggiraph::geom_rect_interactive(
+      data = card_dt,
+      ggplot2::aes(
+        xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf,
+        tooltip = latest_tooltip, data_id = indicator_id
+      ),
+      inherit.aes = FALSE,
+      fill = "#ffffff",
+      color = "#eef1f4",
+      linewidth = 0.45
+    ) +
     ggiraph::geom_line_interactive(
-      ggplot2::aes(tooltip = paste(indicator, latest_status, sep = "\nStatus: "), data_id = indicator_id),
+      ggplot2::aes(tooltip = latest_tooltip, data_id = indicator_id),
       linewidth = 0.9,
       alpha = 0.95
     ) +
     ggiraph::geom_point_interactive(
-      ggplot2::aes(tooltip = tooltip, data_id = indicator_id),
+      ggplot2::aes(tooltip = latest_tooltip, data_id = indicator_id),
       size = 2.1
     ) +
     ggplot2::facet_wrap(ggplot2::vars(signal_label), ncol = ncol, scales = "free_y") +
@@ -166,7 +223,7 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
     ggplot2::scale_x_continuous(breaks = year_breaks, minor_breaks = NULL) +
     ggplot2::labs(
       title = title,
-      subtitle = "Select a trend for its detailed indicator view. Panels use independent value scales.",
+      subtitle = "Scan trends; hover or focus for the latest value and select for details. Compare direction, not slope or magnitude.",
       x = NULL,
       y = NULL
     ) +
@@ -181,7 +238,7 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
       axis.text.y = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
-      panel.spacing = grid::unit(10, "pt"),
+      panel.spacing = grid::unit(7, "pt"),
       plot.margin = ggplot2::margin(8, 10, 8, 8)
     )
 
@@ -189,8 +246,8 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
   standard_girafe(
     p,
     width_svg = ncol * 3.75,
-    height_svg = 1.55 + rows * 2.55,
-    hover_css = "stroke:#f2a541;stroke-width:3px;cursor:pointer;",
+    height_svg = 1.6 + rows * 2.25,
+    hover_css = "fill:#f0f8f7;fill-opacity:1;stroke:#007c89;stroke-width:2px;cursor:pointer;",
     selectable = TRUE,
     rescale = TRUE
   )

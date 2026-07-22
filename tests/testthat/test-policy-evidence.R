@@ -23,6 +23,19 @@ test_that("story rows are scoped to the selected SDG", {
   expect_true(nrow(wash) > 0L)
   expect_false(any(health$hypothesis_id %in% mapping[sdg_id == "SDG 6", hypothesis_id]))
 })
+
+test_that("overview status filters use each indicator's latest status", {
+  timeline <- app_dashboard_timeline()
+  improving <- filter_policy_status(timeline, "improving")
+  attention <- filter_policy_status(timeline, "attention")
+
+  expect_true(all(policy_latest_rows(improving)$progress_status == "Improved"))
+  expect_true(all(policy_latest_rows(attention)$progress_status %in% c("Little change", "Worse", "No estimate")))
+  expect_setequal(
+    unique(c(improving$indicator_id, attention$indicator_id)),
+    unique(timeline$indicator_id)
+  )
+})
 test_that("indexed story charts use stable indicator IDs", {
   timeline <- app_dashboard_timeline()
   expect_false("data_id" %in% names(timeline))

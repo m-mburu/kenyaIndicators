@@ -9,12 +9,14 @@ app_server <- function(input, output, session) {
   catalogue <- app_indicator_catalogue()
   pins <- app_dashboard_pins()
   timeline <- app_dashboard_timeline()
+  hypotheses <- app_hypothesis_map()
   policy_mapping <- policy_evidence_map()
   policy_summary <- shiny::reactive({
     policy_evidence_summary(timeline, catalogue, policy_mapping)
   })
 
   policy_focus_value <- shiny::reactiveVal(NULL)
+  policy_status_filter <- shiny::reactiveVal("all")
 
   session$onFlushed(function() {
     stories <- policy_mapping[, .(sdg_label = sdg_label[1]), by = sdg_id]
@@ -109,6 +111,38 @@ app_server <- function(input, output, session) {
 
   shiny::observeEvent(input$policy_sdg, {
     policy_focus_value(NULL)
+    policy_status_filter("all")
+  }, ignoreInit = TRUE)
+
+  policy_scope <- shiny::reactive({
+    selected_sdg <- selected_policy_sdg()
+    hypothesis_ids <- if (identical(selected_sdg, "all")) {
+      unique(policy_mapping$hypothesis_id)
+    } else {
+      policy_mapping[sdg_id == selected_sdg, hypothesis_id]
+    }
+    data.table::copy(timeline)[hypothesis_id %in% hypothesis_ids]
+  })
+
+  shiny::observeEvent(input$policy_filter_improving, {
+    policy_focus_value(NULL)
+    policy_status_filter("improving")
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$policy_filter_attention, {
+    policy_focus_value(NULL)
+    policy_status_filter("attention")
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$policy_filter_all, {
+    policy_focus_value(NULL)
+    policy_status_filter("all")
+  }, ignoreInit = TRUE)
+
+  shiny::observeEvent(input$policy_filter_sdgs, {
+    policy_focus_value(NULL)
+    policy_status_filter("all")
+    shiny::updateSelectInput(session, "policy_sdg", selected = "all")
   }, ignoreInit = TRUE)
 
   output$policy_zoom_control <- shiny::renderUI({
@@ -124,21 +158,62 @@ app_server <- function(input, output, session) {
     }
   })
 
+  output$policy_detail <- shiny::renderUI({
+    id <- policy_focus_value()
+    if (is.null(id)) return(NULL)
+
+    row <- catalogue[indicator_id %in% id][1]
+    latest <- policy_latest_rows(timeline[indicator_id %in% id])[1]
+    interpretation <- hypotheses[indicator_id %in% id][1]
+    status <- overview_status_cue(latest$progress_status)
+    uncertainty <- if (isTRUE(row$has_ci)) {
+      "Confidence intervals are available and appear in point tooltips."
+    } else {
+      "The published series does not include confidence intervals."
+    }
+    denominator <- if (isTRUE(row$has_denominator)) {
+      "Survey denominators are available for this indicator."
+    } else {
+      "Survey denominators are not included in this series."
+    }
+
+    shiny::div(
+      class = "ki-policy-detail",
+      shiny::div(
+        class = "ki-policy-detail-head",
+        shiny::div(
+          shiny::div(class = "ki-eyebrow", "Selected evidence"),
+          shiny::h3(row$indicator)
+        ),
+        shiny::span(class = paste("ki-status-pill", gsub(" ", "-", tolower(latest$progress_status))), status)
+      ),
+      shiny::div(
+        class = "ki-policy-detail-facts",
+        shiny::span(shiny::strong("Latest"), format_value_with_unit(latest$value, latest$precision, latest$value_unit)),
+        shiny::span(shiny::strong("Year"), latest$survey_year),
+        shiny::span(shiny::strong("Unit"), row$value_axis_label),
+        shiny::span(shiny::strong("Direction"), latest$desired_direction_label)
+      ),
+      shiny::p(class = "ki-policy-interpretation", shiny::strong("How to read it: "), interpretation$interpretation_rule),
+      shiny::p(class = "ki-policy-quality", paste(uncertainty, denominator)),
+      shiny::p(class = "ki-policy-source", paste0("Source: ", row$resource_name, " | Indicator ID: ", id))
+    )
+  })
+
   output$policy_trend <- ggiraph::renderGirafe({
     focus_id <- policy_focus_value()
     if (!is.null(focus_id)) {
-      dt <- data.table::copy(timeline)[indicator_id %in% focus_id]
+      dt <- data.table::copy(dhs)[indicator_id %in% focus_id & preferred_total_flag %in% TRUE]
+      if (data.table::uniqueN(dt$survey_year) < 2L) {
+        dt <- data.table::copy(dhs)[indicator_id %in% focus_id & is_total %in% TRUE]
+      }
+      dt <- canonical_indicator_rows(dt, by_cols = c("indicator_id", "survey_year"))
       dt[, plot_group := "National estimate"]
       return(make_trend_plot(dt, first_available(dt$indicator)))
     }
 
     selected_sdg <- selected_policy_sdg()
-    hypothesis_ids <- if (identical(selected_sdg, "all")) {
-      unique(policy_mapping$hypothesis_id)
-    } else {
-      policy_mapping[sdg_id == selected_sdg, hypothesis_id]
-    }
-    dt <- data.table::copy(timeline)[hypothesis_id %in% hypothesis_ids]
+    dt <- filter_policy_status(policy_scope(), policy_status_filter())
     plot_width <- session$clientData$output_policy_trend_width
     ncol <- overview_panel_columns(plot_width)
     make_long_run_signal_plot(
@@ -164,12 +239,26 @@ app_server <- function(input, output, session) {
   }, ignoreInit = TRUE)
   output$policy_kpis <- shiny::renderUI({
     summary <- policy_summary()
+    latest <- policy_latest_rows(policy_scope())
+    selected_status <- policy_status_filter()
     shiny::div(
       class = "ki-kpi-grid",
-      kpi_card("DHS-relevant SDGs", format_number(nrow(summary)), "curated policy areas"),
-      kpi_card("Improving", format_number(summary[status == "Improving", .N]), "more improving than worsening measures"),
-      kpi_card("Mixed or worsening", format_number(summary[status %in% c("Mixed", "Worsening"), .N]), "requires closer interpretation"),
-      kpi_card("Evidence indicators", format_number(sum(summary$evidence_count)), "included in policy summaries")
+      kpi_card(
+        "DHS-relevant SDGs", format_number(nrow(summary)), "show all curated policy areas",
+        input_id = "policy_filter_sdgs", selected = identical(input$policy_sdg, "all")
+      ),
+      kpi_card(
+        "Improving", format_number(latest[progress_status == "Improved", .N]), "indicators moving in the desired direction",
+        input_id = "policy_filter_improving", selected = identical(selected_status, "improving")
+      ),
+      kpi_card(
+        "Mixed or worsening", format_number(latest[progress_status %in% c("Little change", "Worse", "No estimate"), .N]), "indicators requiring closer interpretation",
+        input_id = "policy_filter_attention", selected = identical(selected_status, "attention")
+      ),
+      kpi_card(
+        "Evidence indicators", format_number(nrow(latest)), "show every indicator in this SDG scope",
+        input_id = "policy_filter_all", selected = identical(selected_status, "all")
+      )
     )
   })
 

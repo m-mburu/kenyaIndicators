@@ -19,7 +19,9 @@ Imports:
     shinycssloaders
 Suggests:
     checkhelper,
+    knitr,
     rhdx,
+    rmarkdown,
     testthat (>= 3.0.0),
     usethis
 Config/testthat/edition: 3

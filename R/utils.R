@@ -112,9 +112,20 @@ overview_panel_columns <- function(width) {
   if (width >= 1000) return(3L)
   2L
 }
+
+balanced_panel_columns <- function(max_columns, n_items) {
+  max_columns <- max(1L, as.integer(max_columns))
+  n_items <- max(1L, as.integer(n_items))
+  if (max_columns <= 3L || n_items <= 4L) return(min(max_columns, n_items))
+
+  candidates <- 3L:max_columns
+  empty_cells <- candidates * ceiling(n_items / candidates) - n_items
+  candidates[which.min(empty_cells)]
+}
 standard_girafe <- function(p, width_svg, height_svg, hover_css = "stroke-width:3px;", selectable = FALSE, rescale = TRUE) {
   options <- list(
     ggiraph::opts_hover(css = hover_css),
+    ggiraph::opts_hover_key(css = hover_css),
     ggiraph::opts_tooltip(css = "background:#132f2f;color:white;padding:10px;border-radius:5px;font-size:14px;line-height:1.28;"),
     ggiraph::opts_sizing(rescale = rescale, width = 1)
   )
@@ -133,12 +144,26 @@ standard_girafe <- function(p, width_svg, height_svg, hover_css = "stroke-width:
     options = options
   )
 }
-kpi_card <- function(label, value, note = NULL, status = "") {
-  shiny::div(
-    class = paste("ki-kpi", status),
+kpi_card <- function(label, value, note = NULL, status = "", input_id = NULL, selected = FALSE) {
+  contents <- shiny::tagList(
     shiny::div(class = "ki-kpi-label", label),
     shiny::div(class = "ki-kpi-value", value),
     if (!is.null(note)) shiny::div(class = "ki-kpi-note", note)
+  )
+  classes <- paste(
+    "ki-kpi",
+    status,
+    if (!is.null(input_id)) "ki-kpi-button" else "",
+    if (isTRUE(selected)) "is-selected" else ""
+  )
+
+  if (is.null(input_id)) return(shiny::div(class = classes, contents))
+
+  shiny::actionButton(
+    input_id,
+    label = contents,
+    class = classes,
+    `aria-pressed` = if (isTRUE(selected)) "true" else "false"
   )
 }
 
