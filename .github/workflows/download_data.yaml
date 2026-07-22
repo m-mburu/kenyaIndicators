@@ -43,19 +43,38 @@ jobs:
           r-version: '4.5.0'
           use-public-rspm: true
 
-      - name: Install and cache R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install sf system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --yes --no-install-recommends \
+            libudunits2-dev \
+            libgdal-dev \
+            libgeos-dev \
+            libproj-dev \
+            libsqlite3-dev
+
+      - name: Restore locked application packages
+        uses: r-lib/actions/setup-renv@v2
+        env:
+          GITHUB_PAT: ${{ github.token }}
         with:
           cache-version: 1
-          needs: check
-          extra-packages: |
-            any::devtools
-            any::desc
-            any::knitr
-            any::remotes
-            any::rmarkdown
-            any::rsconnect
-            github::dickoa/rhdx
+
+      - name: Configure workflow-only R library
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/workflow-library"
+          echo "WORKFLOW_R_LIBRARY=$RUNNER_TEMP/workflow-library" >> "$GITHUB_ENV"
+          echo "RENV_CONFIG_EXTERNAL_LIBRARIES=$RUNNER_TEMP/workflow-library" >> "$GITHUB_ENV"
+
+      - name: Install workflow-only packages
+        env:
+          GITHUB_PAT: ${{ github.token }}
+        run: R_LIBS_SITE="$WORKFLOW_R_LIBRARY" R_LIBS_USER="$WORKFLOW_R_LIBRARY" Rscript --vanilla dev/install_workflow_packages.R
+
+      - name: Validate locked deployment dependencies
+        run: |
+          Rscript -e "tool_library <- normalizePath(Sys.getenv('WORKFLOW_R_LIBRARY')); libraries <- normalizePath(.libPaths()); stopifnot(tool_library %in% libraries, match(tool_library, libraries) > 1L); rsconnect::appDependencies('.')"
 
       - name: Refresh and preprocess HDX data
         id: refresh
