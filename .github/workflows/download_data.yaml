@@ -51,32 +51,43 @@ jobs:
           extra-packages: |
             any::devtools
             any::desc
+            any::knitr
             any::remotes
+            any::rmarkdown
             any::rsconnect
             github::dickoa/rhdx
 
       - name: Refresh and preprocess HDX data
+        id: refresh
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
         run: Rscript data-raw/my_dataset.R
 
       - name: Run package tests
+        id: tests
         run: Rscript -e "devtools::test(stop_on_failure = TRUE)"
 
       - name: Check package
+        id: package_check
         run: Rscript -e "devtools::check(document = FALSE, manual = FALSE, vignettes = FALSE, error_on = 'error')"
 
-      - name: Commit refreshed package data
+      - name: Knit README
+        id: readme
+        run: Rscript -e "rmarkdown::render('README.Rmd', output_format = 'github_document')"
+
+      - name: Commit refreshed data and README report
+        id: commit_updates
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
         shell: bash
         run: |
-          if [[ -z "$(git status --porcelain -- data data-raw/dhs_hdx R/doc_*.R)" ]]; then
-            echo "No data changes to commit."
+          managed_paths=(data data-raw/dhs_hdx R/doc_*.R README.md man/figures)
+          if [[ -z "$(git status --porcelain -- "${managed_paths[@]}")" ]]; then
+            echo "No data or README report changes to commit."
             exit 0
           fi
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add data data-raw/dhs_hdx R/doc_*.R
-          git commit -m "chore(data): refresh Kenya DHS indicators [skip actions]"
+          git add -- "${managed_paths[@]}"
+          git commit -m "chore(data): refresh Kenya DHS indicators and README [skip ci]"
           git push origin HEAD:main
 
       - name: Install Kenya Indicators package
@@ -85,8 +96,31 @@ jobs:
           Rscript -e "remotes::install_github('m-mburu/kenyaIndicators', upgrade = 'never')"
 
       - name: Deploy to shinyapps.io
+        id: deploy
         if: github.event_name != 'pull_request'
         env:
           RS_CONNECT_TOKEN: ${{ secrets.RS_CONNECT_TOKEN }}
           RS_CONNECT_SECRET: ${{ secrets.RS_CONNECT_SECRET }}
         run: Rscript dev/deploy.R
+
+      - name: Publish run report
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Kenya Indicators run report"
+            echo
+            echo "| Step | Result |"
+            echo "|---|---|"
+            echo "| HDX data refresh | ${{ steps.refresh.outcome }} |"
+            echo "| Package tests | ${{ steps.tests.outcome }} |"
+            echo "| Package check | ${{ steps.package_check.outcome }} |"
+            echo "| README knitting | ${{ steps.readme.outcome }} |"
+            echo "| Commit generated report | ${{ steps.commit_updates.outcome }} |"
+            echo "| shinyapps.io deployment | ${{ steps.deploy.outcome }} |"
+            echo
+            echo "- Workflow run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Dashboard: https://mmburu.shinyapps.io/kenyaIndicators/"
+          } >> "$GITHUB_STEP_SUMMARY"

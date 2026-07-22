@@ -10,6 +10,20 @@ test_that("overview columns respond to logical plot width", {
   expect_identical(overview_panel_columns(1600), 4L)
 })
 
+test_that("wide overview grids avoid an orphaned final panel", {
+  expect_identical(balanced_panel_columns(4L, 16L), 4L)
+  expect_identical(balanced_panel_columns(4L, 15L), 3L)
+  expect_identical(balanced_panel_columns(3L, 15L), 3L)
+})
+
+test_that("overview titles are short while formal names remain separate", {
+  expect_identical(
+    overview_indicator_title("FP_CUSM_W_MOD", "A much longer formal title"),
+    "Modern contraceptive use"
+  )
+  expect_identical(overview_status_cue("Worse"), "\u2198 Worsening")
+})
+
 test_that("policy overview zooms into a selected trend and resets", {
   shiny::testServer(app_server, {
     session$flushReact()
@@ -22,6 +36,9 @@ test_that("policy overview zooms into a selected trend and resets", {
     expect_identical(selected_indicator_id(), selected_id)
     expect_silent(output$policy_trend)
     expect_true(any(grepl("Back to all panels", as.character(output$policy_zoom_control), fixed = TRUE)))
+    detail_text <- paste(as.character(output$policy_detail), collapse = " ")
+    expect_match(detail_text, "How to read it", fixed = TRUE)
+    expect_match(detail_text, "Source:", fixed = TRUE)
 
     session$setInputs(policy_zoom_out = 1)
     session$flushReact()
@@ -35,6 +52,7 @@ test_that("navigation is task-oriented and the overview stays visual", {
   expect_match(ui_text, "Explore indicators", fixed = TRUE)
   expect_match(ui_text, "Evidence coverage", fixed = TRUE)
   expect_match(ui_text, "Explore all indicators", fixed = TRUE)
+  expect_match(ui_text, "Compare direction, not slope or magnitude", fixed = TRUE)
   expect_false(grepl("Compare SDG evidence", ui_text, fixed = TRUE))
   expect_false(grepl("indicator_metadata", ui_text, fixed = TRUE))
   expect_false(grepl("kenya_map", ui_text, fixed = TRUE))
