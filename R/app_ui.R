@@ -134,5 +134,29 @@ app_ui <- function(request) {
 #' @noRd
 golem_add_external_resources <- function() {
   golem::add_resource_path("www", app_sys("app/www"))
-  shiny::tags$head(golem::favicon(), golem::bundle_resources(path = app_sys("app/www"), app_title = "kenyaIndicators"))
+  shiny::tags$head(
+    golem::favicon(),
+    golem::bundle_resources(
+      path = app_sys("app/www"),
+      app_title = "kenyaIndicators"
+    ),
+    shiny::tags$script(
+      async = NA,
+      src = paste0(
+        "https://www.googletagmanager.com/gtag/js?id=",
+        "G-BFNZ97VTLJ"
+      )
+    ),
+    shiny::tags$script(
+      shiny::HTML(
+        paste(
+          "window.dataLayer = window.dataLayer || [];",
+          "function gtag(){dataLayer.push(arguments);}",
+          "gtag('js', new Date());",
+          "gtag('config', 'G-BFNZ97VTLJ');",
+          sep = "\n"
+        )
+      )
+    )
+  )
 }
