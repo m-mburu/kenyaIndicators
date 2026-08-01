@@ -49,7 +49,7 @@ knits this README, commits the generated files and deploys the app.
 
 | Item                                   |               Result |
 |:---------------------------------------|---------------------:|
-| README generated                       | 2026-07-22 11:35 EAT |
+| README generated                       | 2026-08-01 05:38 EAT |
 | Latest DHS survey year                 |                 2022 |
 | Curated overview indicators            |                   16 |
 | Indicators with repeated survey rounds |                   15 |
