@@ -4,6 +4,7 @@ test_that("run_app is exported", {
 
 test_that("overview columns respond to logical plot width", {
   expect_identical(overview_panel_columns(NULL), 2L)
+  expect_identical(overview_panel_columns(390), 1L)
   expect_identical(overview_panel_columns(999), 2L)
   expect_identical(overview_panel_columns(1000), 3L)
   expect_identical(overview_panel_columns(1599), 3L)
@@ -39,6 +40,9 @@ test_that("policy overview zooms into a selected trend and resets", {
     detail_text <- paste(as.character(output$policy_detail), collapse = " ")
     expect_match(detail_text, "How to read it", fixed = TRUE)
     expect_match(detail_text, "Source:", fixed = TRUE)
+    expect_match(detail_text, "Status compares", fixed = TRUE)
+    expect_match(detail_text, "Survey values", fixed = TRUE)
+    expect_silent(output$policy_values)
 
     session$setInputs(policy_zoom_out = 1)
     session$flushReact()

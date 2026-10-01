@@ -22,7 +22,7 @@
 html, body {
   background: var(--ki-bg);
   color: var(--ki-ink);
-  font-family: Inter, Lato, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 15px;
   line-height: 1.45;
 }
@@ -47,13 +47,13 @@ body {
 }
 
 .navbar .navbar-brand {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 17px;
 }
 
 .navbar .navbar-nav > li > a {
   font-weight: 650;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .navbar .navbar-nav > .active > a,
@@ -71,7 +71,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--ki-ink);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
 }
 
@@ -105,10 +105,10 @@ h1, h2, h3, h4, h5, h6 {
 .ki-aside-label {
   display: block;
   color: var(--ki-teal);
-  font-size: 11px;
-  font-weight: 850;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-command-name {
@@ -117,7 +117,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--ki-ink);
   font-size: 21px;
   line-height: 1.05;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .ki-command-controls {
@@ -128,9 +128,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .ki-filter-cell label {
   color: var(--ki-muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: none;
   margin-bottom: 4px;
 }
 
@@ -225,7 +225,7 @@ h1, h2, h3, h4, h5, h6 {
   margin: 14px 0 0;
   font-size: 22px;
   line-height: 1.15;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .ki-aside-rule {
@@ -251,8 +251,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 999px;
   color: var(--ki-teal);
   background: var(--ki-teal-soft);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .ki-pill-warm {
@@ -313,16 +313,16 @@ h1, h2, h3, h4, h5, h6 {
 .ki-kpi:nth-child(6) { border-top-color: #3449aa; }
 
 .ki-kpi-label {
-  font-size: 11px;
-  font-weight: 850;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--ki-muted);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-kpi-value {
   margin-top: 8px;
   font-size: 26px;
-  font-weight: 850;
+  font-weight: 700;
   line-height: 1.05;
   color: var(--ki-ink);
   overflow-wrap: anywhere;
@@ -330,7 +330,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .ki-kpi-note {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--ki-muted);
 }
 
@@ -362,7 +362,7 @@ h1, h2, h3, h4, h5, h6 {
 .ki-panel h4 {
   margin: 0;
   font-size: 14px;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .ki-panel .shiny-bound-output,
@@ -380,7 +380,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dataTables_wrapper {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 table.dataTable {
@@ -391,8 +391,8 @@ table.dataTable thead th {
   color: var(--ki-ink);
   background: #f1f5f9;
   border-bottom: 1px solid var(--ki-line);
-  font-size: 11px;
-  text-transform: uppercase;
+  font-size: 14px;
+  text-transform: none;
 }
 
 table.dataTable tbody td {
@@ -468,7 +468,7 @@ table.dataTable tbody td {
   }
 }
 .ki-panel svg text {
-  font-family: Inter, Lato, "Segoe UI", Helvetica, Arial, sans-serif !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .ki-panel .html-widget,
@@ -503,7 +503,7 @@ table.dataTable tbody td {
 }
 
 .ki-filter-cell label {
-  font-size: 10px;
+  font-size: 14px;
   margin-bottom: 2px;
 }
 
@@ -563,7 +563,7 @@ table.dataTable tbody td {
 .ki-pill {
   min-height: 24px;
   padding: 4px 9px;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .ki-kpi-grid {
@@ -585,7 +585,7 @@ table.dataTable tbody td {
 
 .ki-kpi-note {
   margin-top: 4px;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .ki-panel {
@@ -637,14 +637,14 @@ table.dataTable tbody td {
 }
 /* First-page story pass: readable fonts and visible trends before drill-down. */
 html, body {
-  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
 }
 
 h1, h2, h3, h4, h5, h6,
 .navbar .navbar-brand,
 .navbar .navbar-nav > li > a {
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .ki-page {
@@ -679,11 +679,11 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .dataTables_wrapper {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 table.dataTable thead th {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
@@ -725,7 +725,7 @@ table.dataTable thead th {
 }
 
 .ki-overview-head .ki-eyebrow {
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.06em;
 }
 
@@ -761,7 +761,7 @@ table.dataTable thead th {
 }
 
 .ki-kpi-label {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0;
 }
@@ -774,7 +774,7 @@ table.dataTable thead th {
 
 .ki-kpi-note {
   margin-top: 2px;
-  font-size: 10.5px;
+  font-size: 14px;
 }
 
 .ki-panel-story {
@@ -812,7 +812,7 @@ table.dataTable thead th {
 /* Coordinated overview and detail layout. */
 .ki-page {
   width: calc(100% - 32px);
-  max-width: 1760px;
+  max-width: 1280px;
 }
 
 .ki-overview-detail {
@@ -840,7 +840,7 @@ table.dataTable thead th {
 .ki-selection-summary p {
   margin: 8px 0 0;
   color: var(--ki-ink-soft);
-  font-size: 12px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 
@@ -861,9 +861,9 @@ table.dataTable thead th {
 
 .ki-selection-stats span {
   color: var(--ki-muted);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-selection-stats strong {
@@ -874,7 +874,7 @@ table.dataTable thead th {
 
 .ki-selection-note {
   color: var(--ki-muted) !important;
-  font-size: 11px !important;
+  font-size: 14px;
 }
 
 @media (max-width: 991px) {
@@ -911,7 +911,7 @@ table.dataTable thead th {
   display: inline-block;
   margin: 0 0 8px 2px;
   color: var(--ki-teal);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
 }
@@ -1001,7 +1001,7 @@ table.dataTable thead th {
 
   .navbar-nav > li > a {
     padding: 15px 10px;
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 .ki-explorer-controls {
@@ -1019,10 +1019,10 @@ table.dataTable thead th {
 .ki-explorer-controls label,
 .ki-map-filter label {
   color: var(--ki-muted);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-map-filter {
@@ -1036,7 +1036,7 @@ table.dataTable thead th {
 .ki-map-empty {
   padding: 12px;
   color: var(--ki-muted);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.35;
 }
 
@@ -1144,7 +1144,7 @@ table.dataTable thead th {
   flex-wrap: wrap;
   gap: 8px 24px;
   color: var(--ki-muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .ki-indicator-facts span {
@@ -1155,11 +1155,11 @@ table.dataTable thead th {
 .ki-indicator-summary p {
   margin: 8px 0 0;
   color: var(--ki-muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .ki-indicator-source {
-  font-size: 11px !important;
+  font-size: 14px;
 }
 
 /* Overview-first interaction: the summary filters the scan, selection reveals evidence. */
@@ -1197,10 +1197,10 @@ table.dataTable thead th {
   display: block;
   margin-top: 5px;
   color: var(--ki-teal);
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-policy-detail {
@@ -1215,7 +1215,7 @@ table.dataTable thead th {
 .ki-overview-scale-note {
   margin: 0 0 6px;
   color: var(--ki-muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .ki-policy-detail-head {
@@ -1237,8 +1237,8 @@ table.dataTable thead th {
   border-radius: 999px;
   color: #075f67;
   background: #e6f6f4;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .ki-status-pill.little-change,
@@ -1266,27 +1266,27 @@ table.dataTable thead th {
   flex-direction: column;
   gap: 2px;
   color: var(--ki-ink);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .ki-policy-detail-facts strong {
   color: var(--ki-muted);
-  font-size: 9px;
+  font-size: 14px;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ki-policy-detail p {
   margin: 8px 0 0;
   color: var(--ki-ink-soft);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.4;
 }
 
 .ki-policy-detail .ki-policy-quality,
 .ki-policy-detail .ki-policy-source {
   color: var(--ki-muted);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .ki-panel-story svg [tabindex]:focus {
@@ -1324,5 +1324,132 @@ table.dataTable thead th {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px 12px;
+  }
+}
+
+/* Shared reading scale; chart dimensions are set from the output width in R. */
+.ki-page {
+  max-width: 1280px;
+  padding-top: 20px;
+}
+
+.ki-section-head {
+  padding: 0 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ki-section-head h2 {
+  font-size: 26px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.ki-section-head p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ki-eyebrow {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.ki-panel,
+.ki-policy-detail,
+.ki-indicator-summary {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ki-panel-story .ki-panel-head,
+.ki-panel-focus .ki-panel-head {
+  display: none;
+}
+
+.ki-policy-detail {
+  padding: 16px;
+}
+
+.ki-policy-detail h3,
+.ki-indicator-summary h3 {
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.ki-policy-detail .ki-detail-value {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ki-policy-detail p,
+.ki-indicator-summary p,
+.ki-policy-detail .ki-policy-source,
+.ki-policy-detail .ki-policy-quality {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ki-kpi-label,
+.ki-kpi-note,
+.ki-kpi-active-note {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.ki-kpi {
+  box-shadow: none;
+}
+
+.ki-overview-scale-note {
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ki-policy-detail summary {
+  padding: 12px 0;
+  color: var(--ki-teal);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ki-policy-detail summary:focus-visible {
+  outline: 2px solid var(--ki-teal);
+  outline-offset: 3px;
+}
+
+.ki-policy-detail table {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ki-explore-button,
+.ki-back-button,
+.ki-page .form-control {
+  min-height: 44px;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .ki-page {
+    width: 100%;
+    padding: 12px 4px;
+  }
+
+  .ki-section-head h2 {
+    font-size: 24px;
+  }
+
+  .ki-policy-detail-head {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }

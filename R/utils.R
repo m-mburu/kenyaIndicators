@@ -108,6 +108,7 @@ plot_svg_size <- function(n_items = 1, n_series = 1, base_width = 9.5, base_heig
 
 overview_panel_columns <- function(width) {
   if (is.null(width) || !is.finite(width)) return(2L)
+  if (width < 600) return(1L)
   if (width >= 1600) return(4L)
   if (width >= 1000) return(3L)
   2L

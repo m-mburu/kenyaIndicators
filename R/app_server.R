@@ -183,20 +183,58 @@ app_server <- function(input, output, session) {
         class = "ki-policy-detail-head",
         shiny::div(
           shiny::div(class = "ki-eyebrow", "Selected evidence"),
-          shiny::h3(row$indicator)
+          shiny::h3(row$indicator),
+          shiny::p(
+            class = "ki-detail-value",
+            format_value_with_unit(
+              latest$value, latest$precision, latest$value_unit
+            ),
+            paste0(" · ", latest$survey_year)
+          )
         ),
         shiny::span(class = paste("ki-status-pill", gsub(" ", "-", tolower(latest$progress_status))), status)
       ),
-      shiny::div(
-        class = "ki-policy-detail-facts",
-        shiny::span(shiny::strong("Latest"), format_value_with_unit(latest$value, latest$precision, latest$value_unit)),
-        shiny::span(shiny::strong("Year"), latest$survey_year),
-        shiny::span(shiny::strong("Unit"), row$value_axis_label),
-        shiny::span(shiny::strong("Direction"), latest$desired_direction_label)
+      shiny::p(
+        class = "ki-policy-comparison",
+        paste0("Status compares ", latest$baseline_year, " with ",
+               latest$survey_year, ". ", latest$desired_direction_label,
+               "; this does not assess progress towards an SDG target.")
       ),
-      shiny::p(class = "ki-policy-interpretation", shiny::strong("How to read it: "), interpretation$interpretation_rule),
-      shiny::p(class = "ki-policy-quality", paste(uncertainty, denominator)),
-      shiny::p(class = "ki-policy-source", paste0("Source: ", row$resource_name, " | Indicator ID: ", id))
+      shiny::p(
+        class = "ki-policy-interpretation",
+        shiny::strong("How to read it: "), interpretation$interpretation_rule
+      ),
+      shiny::tags$details(
+        shiny::tags$summary("Survey values, source and limitations"),
+        shiny::p(class = "ki-policy-quality", paste(uncertainty, denominator)),
+        shiny::p(class = "ki-policy-source", paste0(
+          "Source: ", row$resource_name, " | Indicator ID: ", id
+        )),
+        DT::DTOutput("policy_values")
+      )
+    )
+  })
+
+  output$policy_values <- DT::renderDT({
+    id <- policy_focus_value()
+    shiny::req(id)
+    rows <- data.table::copy(dhs)[
+      indicator_id %in% id & preferred_total_flag %in% TRUE
+    ]
+    if (data.table::uniqueN(rows$survey_year) < 2L) {
+      rows <- data.table::copy(dhs)[indicator_id %in% id & is_total %in% TRUE]
+    }
+    rows <- canonical_indicator_rows(
+      rows, by_cols = c("indicator_id", "survey_year")
+    )
+    data.table::setorder(rows, survey_year)
+    DT::datatable(
+      rows[, .(
+        Year = survey_year,
+        Estimate = format_value_with_unit(value, precision, value_unit)
+      )],
+      rownames = FALSE,
+      options = list(dom = "t", paging = FALSE, ordering = FALSE)
     )
   })
 
@@ -209,7 +247,9 @@ app_server <- function(input, output, session) {
       }
       dt <- canonical_indicator_rows(dt, by_cols = c("indicator_id", "survey_year"))
       dt[, plot_group := "National estimate"]
-      return(make_trend_plot(dt, first_available(dt$indicator)))
+      return(make_trend_plot(
+        dt, width_px = session$clientData$output_policy_trend_width
+      ))
     }
 
     selected_sdg <- selected_policy_sdg()
@@ -220,7 +260,8 @@ app_server <- function(input, output, session) {
       dt,
       title = if (identical(selected_sdg, "all")) "Curated DHS evidence trends" else paste(selected_sdg, "DHS evidence trends"),
       top_n = 16L,
-      ncol = ncol
+      ncol = ncol,
+      width_px = plot_width
     )
   })
 
@@ -383,14 +424,9 @@ app_server <- function(input, output, session) {
       dt[is.na(plot_group) | !nzchar(plot_group), plot_group := "Total"]
     }
 
-    id <- selected_indicator_id()
-    row <- catalogue[indicator_id %in% id][1]
-    title <- if (data.table::uniqueN(dt$plot_group) > 1 && row$sex_group %in% c("Women", "Men")) {
-      paste0(gsub("^(Women|Men) ", "", row$indicator), " by sex")
-    } else {
-      row$indicator
-    }
-    make_trend_plot(dt, title)
+    make_trend_plot(
+      dt, width_px = session$clientData$output_indicator_trend_width
+    )
   })
 
 

@@ -61,7 +61,7 @@ plot_unit <- function(dt) {
   infer_indicator_unit(first_available(dt$indicator), first_available(dt$indicator_id), first_available(dt$indicator_type))[1]
 }
 
-make_trend_plot <- function(dt, title = NULL) {
+make_trend_plot <- function(dt, title = NULL, width_px = 1100) {
   data.table::setDT(dt)
   validate_plot_data <- nrow(dt) > 0 && uniqueN(dt$survey_year) > 1
   if (!validate_plot_data) {
@@ -109,19 +109,19 @@ make_trend_plot <- function(dt, title = NULL) {
       size = 3
     ) +
     ggplot2::labs(
-      title = title %||% first_available(dt$indicator),
+      title = title,
       x = NULL,
       y = unit_axis_label(unit),
       color = NULL
     ) +
     ggplot2::scale_color_manual(values = rep(c("#007c89", "#bc5090", "#f2a541", "#58508d", "#2f4b7c", "#23845f", "#c43b2b"), 20)) +
-    ggplot2::theme_minimal(base_size = 13) +
+    ggplot2::theme_minimal(base_size = 11, base_family = "sans") +
     ggplot2::theme(
       legend.position = if (group_count > 1) "bottom" else "none",
-      legend.text = ggplot2::element_text(size = 9.5),
+      legend.text = ggplot2::element_text(size = 10.5),
       plot.title = ggplot2::element_text(face = "bold", color = "#132f2f", size = 14),
       axis.title = ggplot2::element_text(size = 11),
-      axis.text = ggplot2::element_text(size = 10, color = "#344054"),
+      axis.text = ggplot2::element_text(size = 10.5, color = "#344054"),
       panel.grid.major.y = ggplot2::element_line(color = "#e5e7eb", linewidth = 0.35),
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
@@ -129,11 +129,15 @@ make_trend_plot <- function(dt, title = NULL) {
       plot.margin = ggplot2::margin(10, 18, 10, 10)
     )
 
-  size <- plot_svg_size(data.table::uniqueN(dt$plot_group), data.table::uniqueN(dt$plot_group), base_width = 9.8, base_height = 5.2, per_item = 0.16)
-  standard_girafe(p, size$width, size$height)
+  if (is.null(width_px) || !is.finite(width_px)) width_px <- 1100
+  width_px <- max(160, width_px)
+  height_px <- if (width_px < 600) 300 else 380
+  standard_girafe(p, width_px / 96, height_px / 96)
 }
 
-make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", top_n = 8, ncol = 4) {
+make_long_run_signal_plot <- function(
+    dt, title = "Long-run indicator trends", top_n = 8, ncol = 4,
+    width_px = 1100) {
   data.table::setDT(dt)
   if (nrow(dt) == 0 || data.table::uniqueN(dt$survey_year[!is.na(dt$survey_year)]) <= 1) {
     return(empty_girafe("Not enough data for long-run trends"))
@@ -168,9 +172,17 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
   plot_dt[, status_cue := overview_status_cue(as.character(latest_status))]
   plot_dt[, direction_cue := ifelse(desirable_direction >= 0, "\u2191 higher is better", "\u2193 lower is better")]
   plot_dt[, signal_label := paste0(
-    wrap_short(display_title, width = 25, max_chars = 48),
-    "\n", status_cue, "  \u00b7  ", direction_cue
-  )]
+    wrap_short(display_title, width = 28, max_chars = 58),
+    "\n",
+    wrap_short(
+      paste0(
+        format_value_with_unit(value[.N], precision[.N], value_unit[.N]),
+        " · ", survey_year[.N]
+      ),
+      width = 30, max_chars = 90
+    ),
+    "\n", status_cue[.N], " since ", baseline_year[.N]
+  ), by = indicator_id]
   plot_dt[, signal_label := factor(signal_label, levels = unique(signal_label))]
   plot_dt[, latest_tooltip := {
     latest <- .SD[.N]
@@ -179,6 +191,7 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
       "\nLatest: ", format_value_with_unit(latest$value, latest$precision, latest$value_unit),
       " (", latest$survey_year, ")",
       "\nStatus: ", overview_status_cue(as.character(latest$latest_status)),
+      "\nComparison: ", latest$baseline_year, "–", latest$survey_year,
       "\nDirection rule: ", latest$desired_direction_label,
       "\nSelect for the full evidence view"
     )
@@ -222,19 +235,21 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
     ) +
     ggplot2::scale_x_continuous(breaks = year_breaks, minor_breaks = NULL) +
     ggplot2::labs(
-      title = title,
-      subtitle = "Scan trends; hover or focus for the latest value and select for details. Compare direction, not slope or magnitude.",
+      title = NULL,
+      subtitle = NULL,
       x = NULL,
       y = NULL
     ) +
-    ggplot2::theme_void(base_size = 11) +
+    ggplot2::theme_void(base_size = 11, base_family = "sans") +
     ggplot2::theme(
       legend.position = "none",
       plot.title = ggplot2::element_text(face = "bold", color = "#132f2f", size = 14.5),
       plot.subtitle = ggplot2::element_text(color = "#667085", size = 10.5),
-      strip.text = ggplot2::element_text(face = "bold", color = "#132f2f", size = 9.5, lineheight = 0.98),
+      strip.text = ggplot2::element_text(
+        face = "plain", color = "#132f2f", size = 10.5, lineheight = 1.25
+      ),
       axis.title = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(size = 10.5, color = "#475467"),
       axis.text.y = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
@@ -243,10 +258,11 @@ make_long_run_signal_plot <- function(dt, title = "Long-run indicator trends", t
     )
 
   rows <- ceiling(data.table::uniqueN(plot_dt$indicator_id) / ncol)
+  if (is.null(width_px) || !is.finite(width_px)) width_px <- 1100
   standard_girafe(
     p,
-    width_svg = ncol * 3.75,
-    height_svg = 1.6 + rows * 2.25,
+    width_svg = max(160, width_px) / 96,
+    height_svg = rows * 2.05 + 0.15,
     hover_css = "fill:#f0f8f7;fill-opacity:1;stroke:#007c89;stroke-width:2px;cursor:pointer;",
     selectable = TRUE,
     rescale = TRUE
