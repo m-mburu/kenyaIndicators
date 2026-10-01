@@ -38,7 +38,14 @@ app_ui <- function(request) {
         "Overview",
         shiny::fluidPage(shiny::div(
           class = "ki-page",
-          section_head("Policy evidence", "Kenya's DHS evidence for SDG progress", "Scan trends; hover or focus for the latest value and select for details. Use the filters to focus on an SDG theme or status."),
+          section_head(
+            "Policy evidence",
+            "Kenya's DHS evidence for SDG progress",
+            paste(
+              "Select a trend for survey values and interpretation.",
+              "Filter by SDG theme or change since the first survey."
+            )
+          ),
           shiny::fluidRow(
             shiny::column(6, shiny::selectInput("policy_sdg", "Filter overview", choices = NULL)),
             shiny::column(
@@ -59,7 +66,11 @@ app_ui <- function(request) {
           shiny::div(
             class = "ki-overview-scale-note",
             shiny::strong("Independent scales."),
-            " Compare direction, not slope or magnitude."
+            paste(
+              " Compare direction, not slope or magnitude.",
+              "Status compares the first and latest available surveys;",
+              "it does not assess SDG target attainment."
+            )
           ),
           shiny::fluidRow(shiny::column(12, plot_panel("DHS evidence trends", shinycssloaders::withSpinner(ggiraph::girafeOutput("policy_trend"), color = "#007c89"), "ki-panel-story")))
         ))
