@@ -25,6 +25,9 @@ concurrency:
 jobs:
   check-refresh-deploy:
     runs-on: ubuntu-24.04
+    environment:
+      name: shinyapps.io
+      url: https://mmburu.shinyapps.io/kenyaIndicators/
     env:
       TZ: Africa/Nairobi
       GITHUB_PAT: ${{ secrets.GH_PAT }}
